@@ -1,0 +1,76 @@
+# ==============================================================================
+# Process Configuration: Depropanizer Distillation Column & ML Surrogate Bounds
+# ==============================================================================
+
+process:
+  name: "Depropanizer_Distillation_Train"
+  description: "Multi-component hydrocarbon separation (Propane/Propylene vs Butanes)"
+  feed_components:
+    - name: "Propane"
+      cas: "74-98-6"
+      nominal_mole_frac: 0.35
+    - name: "Propylene"
+      cas: "115-07-1"
+      nominal_mole_frac: 0.40
+    - name: "i-Butane"
+      cas: "75-28-5"
+      nominal_mole_frac: 0.15
+    - name: "n-Butane"
+      cas: "106-97-8"
+      nominal_mole_frac: 0.10
+
+column_specifications:
+  number_of_stages: 45
+  feed_stage: 22
+  nominal_top_pressure_bar: 18.0
+  nominal_bottom_pressure_bar: 18.8
+  target_distillate_purity: 0.995 # 99.5% C3 recovery / purity spec
+  max_bottoms_impurity: 0.015     # <= 1.5% C3 in bottoms
+
+operational_bounds:
+  feed_flow_rate_kmol_hr:
+    min: 800.0
+    max: 1400.0
+    nominal: 1000.0
+  feed_temperature_c:
+    min: 40.0
+    max: 65.0
+    nominal: 52.0
+  feed_pressure_bar:
+    min: 19.0
+    max: 23.0
+    nominal: 20.5
+  reflux_ratio:
+    min: 2.5
+    max: 6.5
+    nominal: 4.2
+  reboiler_duty_mw:
+    min: 12.0
+    max: 28.0
+    nominal: 18.5
+  column_pressure_bar:
+    min: 16.5
+    max: 20.5
+    nominal: 18.0
+
+economics:
+  steam_cost_per_mwh_usd: 42.50
+  cooling_water_cost_per_mwh_usd: 8.20
+  propylene_value_per_ton_usd: 950.00
+  feedstock_cost_per_ton_usd: 620.00
+  annual_operating_hours: 8400
+
+ml_surrogate:
+  features:
+    - "feed_flow_kmol_hr"
+    - "feed_temp_c"
+    - "feed_c3_fraction"
+    - "reflux_ratio"
+    - "reboiler_duty_mw"
+    - "column_pressure_bar"
+  targets:
+    - "distillate_c3_purity"
+    - "bottoms_c3_loss"
+    - "condenser_duty_mw"
+    - "specific_energy_gj_ton"
+    - "hourly_operating_cost_usd"
